@@ -1325,7 +1325,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 								'length' => $length,
 
-								'reported_weight' => "1"
+								'reported_weight' => $weight
 
 							);
 
