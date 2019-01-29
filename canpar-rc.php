@@ -34,17 +34,9 @@ Note: When modifying this plugin, please modify the $this->version string (defin
 
 */
 
-
-
 //Block direct access to the plugin
 
 defined('ABSPATH') or die();
-
-
-
-
-
-
 
 /**
 
@@ -53,21 +45,14 @@ defined('ABSPATH') or die();
  */
 
 if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
-
-	
-
 	/**
-
 	 *
-
 	 */
 
 	function canpar_rate_calculator_init() {
 
 		if ( ! class_exists( 'WC_Canpar_Rate_Calculator' ) ) {
-
 			class WC_Canpar_Rate_Calculator extends WC_Shipping_Method {
-
 				/**
 
 				* Constructor for Canpar Rate Calculator class
