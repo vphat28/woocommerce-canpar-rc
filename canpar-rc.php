@@ -1,7 +1,5 @@
 <?php
-
 /*
-
 Plugin Name: Canpar Rate Calculator
 
 Description: Rate shipments via the Canpar rate calculator
