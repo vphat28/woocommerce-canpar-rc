@@ -67,17 +67,17 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 				public function __construct() {
 
-					$this->id				 = 'canpar_rate_calculator'; // Id for your shipping method. Should be unique.
-
+					$this->id				 = 'add_canpar_shipping_method'; // Id for your shipping method. Should be unique.
+		            $this->instance_id        = absint( $instance_id );
 					$this->method_title	   = __( 'Canpar Rate Calculator' );  // Title shown in admin
-
 					$this->method_description = __( 'Calculate shipping rates using the Canpar rate calculator' ); // Description shown in admin
-
 					$this->title			  = "Canpar";
-
 					$this->version		= "1.0.7";
-
-					
+					$this->supports           = array(
+                        'shipping-zones',
+                        'instance-settings',
+                        'instance-settings-modal',
+                    );
 
 					$this->init();
 
