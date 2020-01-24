@@ -40,18 +40,18 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				* @access public
 				* @return void
 				*/
-				public function __construct( $instance_id = 0) {
-					$this->id				 = 'add_canpar_shipping_method'; // Id for your shipping method. Should be unique.
-		            $this->instance_id        = absint( $instance_id );
+				public function __construct() {
+					$this->id				 = 'canpar_rate_calculator'; // Id for your shipping method. Should be unique.
 					$this->method_title	   = __( 'Canpar Rate Calculator' );  // Title shown in admin
 					$this->method_description = __( 'Calculate shipping rates using the Canpar rate calculator' ); // Description shown in admin
 					$this->title			  = "Canpar";
 					$this->version		= "1.0.7";
-					$this->supports           = array(
+						$this->supports = [
 						'shipping-zones',
 						'instance-settings',
 						'instance-settings-modal',
-					    );
+					    ];
+
 					$this->init();
 				}
  
@@ -663,7 +663,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 								'height' => $height,
 								'width' => $width,
 								'length' => $length,
-								'reported_weight' => "1"
+								'reported_weight' => $weight
 							);
 
 							// Make the request
@@ -686,11 +686,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 								$billed_weight = $rate->packages[0]->billed_weight;
 								$units['wgt'] = $rate->billed_weight_unit;
 								$units['dim'] = $rate->dimention_unit;
-								$weights["{$length}-{$width}-{$height}"] = $billed_weight; // Cache this so a WS call does not need to be made again
-
-								if ($billed_weight < $weight) // Check if the billed_weight (currently the dim weight) should be used or not
-								{$billed_weight = $weight;} // If it is less, then go with the highest
-
+								$weights["{$weight}-{$length}-{$width}-{$height}"] = $billed_weight; // Cache this so a WS call does not need to be made again
 							}
 							else {
 								$billed_weight = $weight;
@@ -699,6 +695,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						
 						// Add the weight of the product to the total weight
 						$total_weight += $quantity * $billed_weight;
+						// $total_weight = (ceil($total_weight));
 						
 						// If the dimensions made this an XC piece, then add that
 						if ($rate->packages[0]->xc == true) {
@@ -725,8 +722,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 					// Determine how many pieces are in the shipment
 					// First, does the weight need to be converted to conform with the Canpar rate calculator settings?
-					$units['wgt'] = strtoupper($units['wgt']); // Convert to upper case
-					if ( strtoupper(substr(get_option('woocommerce_weight_unit'), 0, 1)) != $units['wgt'] ) {
+					$woocommerceWgt = strtoupper(substr(get_option('woocommerce_weight_unit'), 0, 1));
+					$this->canpar_log($gen_pcs_log, "Woocommerce weight unit is {$woocommerceWgt} and rate unit is {$units['wgt']}", "append");
+					if ( $woocommerceWgt != $units['wgt'] ) {
 						$converted_weight = $total_weight;
 						
 						// Convert to lbs
@@ -1019,3 +1017,4 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
  
 	add_filter( 'woocommerce_shipping_methods', 'add_canpar_shipping_method' );
 }
+
