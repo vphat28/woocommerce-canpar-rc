@@ -2,7 +2,7 @@
 /*
 Plugin Name: Canpar Rate Calculator
 Description: Rate shipments via the Canpar rate calculator
-Version:	 1.0.7
+Version:	 1.0.8
 Author:	  Canpar Courier
 Author URI:  http://www.canpar.com
 License:	 GPL2
@@ -46,15 +46,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					$this->method_description = __( 'Calculate shipping rates using the Canpar rate calculator' ); // Description shown in admin
 					$this->title			  = "Canpar";
 					$this->version		= "1.0.7";
-						$this->supports = [
-						'shipping-zones',
-						'instance-settings',
-						'instance-settings-modal',
-					    ];
 
 					$this->init();
 				}
- 
+
 				/**
 				* Init the Canpar Rate Calculator settings
 				*
@@ -64,38 +59,38 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				function init() {
 					// Load the settings API
 					$this->init_settings(); // This is part of the settings API. Loads settings you previously init.
-					
-					
+
+
 					// Define the defaults - note, this is done here instead of init_form_fields, in case this plugin gets updated with new settings defaults, and the user does not access the administrative area.
 					if (count($this->settings) > 0) {
 						$this->settings['origin_postal_code'] = preg_replace("/[^A-Za-z0-9]/", '', $this->settings['origin_postal_code']);
-						
+
 						if ( (float) $this->settings['default_weight'] <= 0)
 						{$this->settings['default_weight'] = 1;}
-						
+
 						if ( (float) $this->settings['maximum_weight'] <= 0)
 						{
-							if (substr(get_option('woocommerce_weight_unit'), 0, 1) == "L") {
+							if (substr(get_option('woocommerce_weight_unit'), 0, 1) == "l") {
 								$this->settings['maximum_weight'] = 50;
 							}
 							else {
 								$this->settings['maximum_weight'] = 20;
 							}
 						}
-						
+
 						if ((int) $this->settings['lead_time'] < 0)
 						{$this->settings['lead_time'] = 0;}
-						
+
 						$this->settings['handling_fee_amount'] = (float) $this->settings['handling_fee_amount'];
-						
+
 						if ( ! in_array($this->settings['debug'], array('yes', 'no')))
 						{$this->settings['debug'] = 'yes';}
 					}
-					
+
 					if ( ! isset($this->settings['service_prefix']))
 					{$this->settings['service_prefix'] = "Canpar";}
-						
-					
+
+
 					// Connect to the SOAP client
 					if (isset( $this->settings['rating_url'] )) {
 						$this->canpar = $this->soap_connect( $this->settings['rating_url'] );
@@ -103,7 +98,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					else {
 						$this->canpar = new StdClass(); //Create a dummy object
 					}
-					
+
 					// Set the shipping method names
 					$this->services = array(
 						'1' => trim($this->settings['service_prefix'] . " Ground"),
@@ -119,17 +114,17 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						'H' => trim($this->settings['service_prefix'] . " USA Select Parcel"),
 						'I' => trim($this->settings['service_prefix'] . " International")
 					);
-					
+
 					// Output the forms for the settings
 					$this->init_form_fields(); // This is part of the settings API. Override the method to add your own settings
-					
+
 					// Save settings in admin
 					add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
 				}
-				
+
 				/**
 				* Initialise Canpar Rate Calculator Settings Form Fields
-				* 
+				*
 				* @access public
 				* @return void
 				*/
@@ -141,7 +136,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 							'description' => 'Enable the Canpar shipping method.',
 							'default' => 'no',
 							'options' => array(
-								'yes'=>"Yes", 'no' => 'No'	
+								'yes'=>"Yes", 'no' => 'No'
 							)
 						),
 						'user_id' => array(
@@ -261,7 +256,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 							'description' => 'Enable this to return rates with your Canpar account invoice discounts applied (if applicable).<br />Note that "source" discounts will still be displayed. Speak with your Canpar sales representative for clarification on the types of discounts.<br />It is recommended that this remain disabled, as "source" discounts are generally meant to be displayed to your customer, while "invoice" discounts are not.',
 							'default' => 'no',
 							'options' => array(
-								'yes'=>"Yes", 'no' => 'No'	
+								'yes'=>"Yes", 'no' => 'No'
 							)
 						),
 						'enable_dv' => array(
@@ -285,7 +280,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 							'description' => 'Enable this to log all rating communication with Canpar, as well as display errors on the screen <i>when you are logged in as the wordpress administrator</i>.<br />Warning: this will create log files for every shipment calculation, which may accumulate large file sizes over time, and should thus be left disabled.',
 							'default' => 'no',
 							'options' => array(
-								'yes'=>"Yes", 'no' => 'No'	
+								'yes'=>"Yes", 'no' => 'No'
 							)
 						),
 						'output_logs' => array(
@@ -294,16 +289,16 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 							'description' => 'Enable this to output log data at the top of the View Cart page. This will only be displayed to users who are logged in as admins, and your customers will not be able to view this.<br />Note 1: This needs to be enabled alongside debug mode.<br />Note 2: Rating data gets cached, and only updates when the plugin settings change, or when the shopping cart changes. If debug data is not being displayed, just click "save" at the bottom of this settings page to force a rate refresh.',
 							'default' => 'no',
 							'options' => array(
-								'yes'=>"Yes", 'no' => 'No'	
+								'yes'=>"Yes", 'no' => 'No'
 							)
 						),
 					);
 				}
-				
-				
+
+
 				/**
 				* Initialise Canpar Rate Calculator Settings Form Fields
-				* 
+				*
 				* @access public
 				* @return void
 				*/
@@ -314,7 +309,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					<?php $this->generate_settings_html(); ?>
 					</table> <?php
 				}
- 
+
 				/**
 				* calculate_shipping function.
 				*
@@ -331,7 +326,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					// Prep logging
 					$load_time_start = microtime(true);
 					$soap_log_name = date('His') . "-RatingSOAP";
-					
+
 					//Output the log if needed.
 					$output_log = false;
 					if ($this->settings['debug'] == "yes" && $this->settings['output_logs'] == "yes" && current_user_can('edit_plugins') === true) {
@@ -355,38 +350,38 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						<div id="canpar_output_logs_display" style="display: none;">
 						<?php
 					}
-					
+
 					// Output the plugin settings
 					$this->canpar_log($soap_log_name, "Plugin version:\n" . print_r($this->version, 1), "append");
 					$this->canpar_log($soap_log_name, "Plugin settings:\n" . print_r($this->settings, 1), "append");
 					$this->canpar_log($soap_log_name, "Woo Weight Unit:\n" . get_option('woocommerce_weight_unit'), "append");
 					$this->canpar_log($soap_log_name, "Woo Dimension Unit:\n" . get_option('woocommerce_dimension_unit'), "append");
-					
-					
+
+
 					// Check to see if the WS URL exists. If it does not, then rating cannot take place.
 					if (method_exists($this->canpar, "__getFunctions") === false) {
 						if ($output_log == true)  // Close the log catching div (do this whenever ending this method)
-						{print '</div>';} 
-						
+						{print '</div>';}
+
 						return;
 					}
-					
+
 					// Make sure the Measurement units are in kg/lb and cm/in
 					if ( ! in_array(strtolower(get_option('woocommerce_weight_unit')), array("kg", "lb", "lbs", "kgs")) || ! in_array(strtolower(get_option('woocommerce_dimension_unit')), array("cm", "in", "cms", "ins")) ){
 						$this->canpar_log($soap_log_name, "Error: Weight Unit and/or Dimension unit are not kg/lb and cm/in. They are:\n" . get_option('woocommerce_weight_unit') . " / " . get_option('woocommerce_dimension_unit'), "append");
 						$this->output_error("Error: Weight Unit and/or Dimension unit are not kg/lb and cm/in. Ensure they are set in the WooCommerce Settings, under the Products tab.", __LINE__);
-						
+
 						if ($output_log == true)  // Close the log catching div (do this whenever ending this method)
-						{print '</div>';} 
-						
+						{print '</div>';}
+
 						return;
 					}
-					
-					
+
+
 					// Begin the counter to how many rate methods are being displayed.
 					$rates_displayed = 0;
-					
-					// Filter the postal code 
+
+					// Filter the postal code
 					$package['destination']['postcode'] = preg_replace("/[^A-Za-z0-9]/", '', $package['destination']['postcode']);
 					//Define the shipping date
 					$shipping_date = $this->get_shipping_date();
@@ -417,7 +412,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					}
 
 					$available_services = $available_services->return->getAvailableServicesResult;
-					
+
 					if (is_null($available_services))
 					{$available_services = array();} // Just make it a blank array to avoid errors about "invalid argument" for the following foreach()
 
@@ -431,11 +426,11 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						$pieces = $this->generate_pieces($package, $service->type);
 						$request = $this->build_shipment_request($package, $pieces['pieces'], $service->type, $shipping_date, $pieces['units']);
 						$rate = $this->canpar->rateShipment(array('request'=>$request));
-						
+
 						// Log the request
 						$this->canpar_log($soap_log_name, "rateShipment Request - Service Type: {$this->services[$service->type]}\n" . $this->canpar->__getLastRequest(), "append");
 						$this->canpar_log($soap_log_name, "rateShipment Response - Service Type: {$this->services[$service->type]}\n" . $this->canpar->__getLastResponse(), "append");
-						
+
 						// Check for errors, and stop processing if there are any found
 						$error = $this->get_error($rate);
 
@@ -443,18 +438,18 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 							$this->output_error("Service: {$this->services[$service->type]} - $error", __LINE__);
 							continue;
 						}
-						
+
 						$rate = $rate->return->processShipmentResult->shipment;
-						
+
 						// Convert the rate object to an array for easy cycling
 						$rate = json_decode(json_encode($rate), true);
-						
+
 						// Determine the label name (service type name, and the ETA)
 						$label = $this->services[$service->type];
 						if ($this->settings['display_eta'] == "yes" && $service->estimated_delivery_date != "") {
-							$label .= " - " . date('M d', strtotime($service->estimated_delivery_date));	
+							$label .= " - " . date('M d', strtotime($service->estimated_delivery_date));
 						}
-						
+
 						// Calculate the totals
 						$total_charge = 0;
 						foreach ($rate AS $index=>$value) {
@@ -463,27 +458,27 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 								$total_charge += (float) $value;
 							}
 						}
-						
+
 						// Add handling to the charge (not the taxes)
 						if ($this->settings['handling_fee_amount'] != 0)
 						{
 							$log_total = $total_charge; //This is only used to update the log file with the original charge before handling
-							
+
 							if ($this->settings['handling_fee_type'] == "$")
 							{$total_charge += (float) $this->settings['handling_fee_amount'];}
-							
+
 							if ($this->settings['handling_fee_type'] == "%") {
 								//Convert to a percent
 								$handling = (float) $this->settings['handling_fee_amount'];
 								$handling /= 100;
 								$handling += 1;
-								
+
 								$total_charge *= $handling;
 							}
-							
+
 							$this->canpar_log($soap_log_name, "Handling charge of {$this->settings['handling_fee_amount']} ({$this->settings['handling_fee_type']}) applied. From \${$log_total} to \${$total_charge}", "append");
 						}
-						
+
 						// Add the rate to the available service methods
 						$taxes = array();
 						foreach (array('tax_charge_1', 'tax_charge_2') as $index)
@@ -492,7 +487,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 							if ($tax > 0)
 							{$taxes[] = $tax;}
 						}
-						
+
 						$rate_output = array(
 							'id' => $rate['service_type'],
 							'label' => $label,
@@ -500,31 +495,35 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 							'taxes' => $taxes,
 							'calc_tax' => 'per_order'
 						);
-						
+
 						$this->canpar_log($soap_log_name, "Rate output for {$this->services[$service->type]}:\n" . print_r($rate_output, 1), "append");
-						
+
 						// Register the rate
 						$this->add_rate( $rate_output );
 						$rates_displayed ++;
 					}
-					
+
 					//Output the time it took to load the page
 					$load_time = microtime(true) - $load_time_start;
 					$this->canpar_log($soap_log_name, "Rates generated in:\n" . round($load_time, 4) . " seconds", "append");
-					
+
 					//Determine if any rates displayed
 					if ($rates_displayed == 0) {
 						$this->canpar_log($soap_log_name, "Note: No rating methods were displayed", "append");
 						$this->output_error("Warning: No rating methods were returned for Canpar shipping. If you are expecting to see Canpar shipping methods for the shipping destination, make sure there are no other errors, and that the appropriate services are selected in the <b>services</b> section of the Canpar Rate Calculator settings.", __LINE__);
 					}
-					
+
 					//Close the log file output div
 					if ($output_log == true) {
 						print '</div>';
 					}
 				}
-				
-				
+
+				function getConfiguredWeightUnit()
+				{
+				    return strtoupper(substr(get_option('woocommerce_weight_unit'), 0, 1)) ;
+				}
+
 				/**
 				 * Write a log file with the soap requests
 				 *
@@ -545,7 +544,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					else {
 						$apply_discounts = "0";
 					}
-					
+
 					// Build the pickup address
 					$pickup_address = array(
 						'address_line_1' => 'WOO FILLER',
@@ -555,7 +554,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						'postal_code' => $this->settings['origin_postal_code'],
 						'province' => $this->settings['origin_province']
 					);
-					
+
 					// Build the delivery address
 					$delivery_address = array(
 						'address_line_1' => 'WOO FILLER',
@@ -596,7 +595,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					);
 					return $request;
 				}
-				
+
 				/**
 				 * Calculate the number of pieces in the shipment, based on the weight and dimensions
 				 *
@@ -623,12 +622,12 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					 * Use the web services to calculate the dimensional weight,
 					 * as well as the appropriate billed weight and XC
 					 */
-					
+
 					$weights = array();
 					$i = 1;
 					foreach ($package['contents'] AS $product_data) {
 						$product = $product_data['data'];
-						
+
 						// Log
 						$this->canpar_log($gen_pcs_log, "Calculating product {$i}: {$product->post->post_title} (Product ID: {$product_data['product_id']})", "append");
 
@@ -638,76 +637,39 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						$height = (float) $product->height;
 						$weight = (float) $product->weight;
 						$quantity = (int) $product_data['quantity'];
-						
+
 						// Make sure the weight is defined
 						if ($weight == 0)
 						{$weight = (float) $this->settings['default_weight'];}
 
 						/* Determine the dim weight and unit conversion via a web service call */
-						
+
 						// Check if a value for these same dims and weight has already been determined for this service
 						if (isset($weights["{$length}-{$width}-{$height}"])){
 							$billed_weight = $weights["{$length}-{$width}-{$height}"];
-							
+
 							$this->canpar_log($gen_pcs_log, "The weight was determined from the cached value. No WS call was made for this product.", "append");
 						}
 						// Check if the units are set and the same as the WooCommerce settings, as well as if dims are 0 (if this is the case, then no WS call is required)
-						elseif ( substr(get_option('woocommerce_weight_unit'), 0, 1) == $units['wgt'] && ($length == 0 || $width == 0 || $height == 0) ) { 
+						elseif ( strtoupper(substr(get_option('woocommerce_weight_unit'), 0, 1)) == $units['wgt'] && ($length == 0 || $width == 0 || $height == 0) ) {
 							$billed_weight = $weight;
-							
+
 							$this->canpar_log($gen_pcs_log, "Dimensions were not set, and the calculated weight unit was already determined, so no WS call was required", "append");
 						}
 						else { //Make the WS call to calculate the dim weight, determine the weight unit, and convert the weight if needed
-							// Build packages
-							$pieces = array(
-								'height' => $height,
-								'width' => $width,
-								'length' => $length,
-								'reported_weight' => $weight
-							);
-
-							// Make the request
-							$request = $this->build_shipment_request($package, $pieces, $service, $this->get_shipping_date());
-							$rate = $this->canpar->rateShipment(array('request'=>$request));
-
-							// Log the request
-							$this->canpar_log($gen_pcs_log, "Dim weight request\n".$this->canpar->__getLastRequest(), "append");
-							$this->canpar_log($gen_pcs_log, "Dim weight response\n".$this->canpar->__getLastResponse(), "append");
-
-							// Check for errors
-							$error = $this->get_error($rate);
-							if ($error != "") {
-								$this->output_error("Service: {$this->services[$service]} - $error", __LINE__);
-							}
-
-							// Determine the weight and units (units will always return the same after every request)
-							if ($error == "") {
-								$rate = $rate->return->processShipmentResult->shipment;
-								$billed_weight = $rate->packages[0]->billed_weight;
-								$units['wgt'] = $rate->billed_weight_unit;
-								$units['dim'] = $rate->dimention_unit;
-								$weights["{$weight}-{$length}-{$width}-{$height}"] = $billed_weight; // Cache this so a WS call does not need to be made again
-							}
-							else {
 								$billed_weight = $weight;
-							}
+
 						}
-						
+
 						// Add the weight of the product to the total weight
 						$total_weight += $quantity * $billed_weight;
-						// $total_weight = (ceil($total_weight));
-						
-						// If the dimensions made this an XC piece, then add that
-						if ($rate->packages[0]->xc == true) {
-							$total_xc_weight += $quantity * $billed_weight;
-						}
+
 
 						// Log the product
 						$log_output = array();
 						$log_output[] = "Product {$i}: {$product->post->post_title} (Product ID: {$product_data['product_id']})";
 						$log_output[] = ((float) $product->weight == 0) ? "Weight: {$weight} (defaulted from 0)" : "Weight: {$weight}";
 						$log_output[] = "Dims: {$length} x {$width} x {$height}";
-						$log_output[] = "Extra Care (XC): {$rate->packages[0]->xc}";
 						$log_output[] = "Price (subtotal): " . $product_data['line_subtotal'];
 						$log_output[] = "Calculated weight: {$billed_weight} {$units['wgt']}";
 						$log_output[] = "Quantity: {$quantity}";
@@ -722,21 +684,14 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 
 					// Determine how many pieces are in the shipment
 					// First, does the weight need to be converted to conform with the Canpar rate calculator settings?
-					$woocommerceWgt = strtoupper(substr(get_option('woocommerce_weight_unit'), 0, 1));
-					$this->canpar_log($gen_pcs_log, "Woocommerce weight unit is {$woocommerceWgt} and rate unit is {$units['wgt']}", "append");
-					if ( $woocommerceWgt != $units['wgt'] ) {
+					$units['wgt'] = strtoupper($units['wgt']); // Convert to upper case
+					if ($this->getConfiguredWeightUnit() !== 'L') {
 						$converted_weight = $total_weight;
 						
 						// Convert to lbs
-						if ($units['wgt'] == "K") {
+						if ($this->getConfiguredWeightUnit() == "K") {
 							$converted_weight *= 2.2;
 							$total_xc_weight *= 2.2;
-						}
-						
-						// Convert to kgs
-						if ($units['wgt'] == "L") {
-							$converted_weight /= 2.2;
-							$total_xc_weight /= 2.2;
 						}
 						
 						//Determine the number of pieces
@@ -747,6 +702,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						
 						//Log
 						$this->canpar_log($gen_pcs_log, "Total weight of {$total_weight} was converted to {$converted_weight} for determining the number of pieces", "append");
+						$total_weight = $converted_weight;
 					}
 					else { // If it does not need converted
 						// Get the number of pieces
@@ -787,7 +743,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					}
 					
 					//Output the values
-					$output = array("pieces"=>$pieces, "units"=>$units);
+					$output = array("pieces" => $pieces, "units"=>$units);
 					$this->canpar_log($gen_pcs_log, "Final piece values for service {$this->services[$service]}:\n" . print_r($output, 1), "append");
 					return $output;
 				}
@@ -1017,4 +973,3 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
  
 	add_filter( 'woocommerce_shipping_methods', 'add_canpar_shipping_method' );
 }
-
