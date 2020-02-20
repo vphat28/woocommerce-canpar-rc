@@ -577,7 +577,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						'handling_type' => $this->settings['handling_fee_type'],
 						'packages' => $pieces,
 						'pickup_address' => $pickup_address,
-						'reported_weight_unit' => (in_array($units['wgt'], array('K', 'L'))) ? $units['wgt'] : get_option('woocommerce_weight_unit'),
+						'reported_weight_unit' => (in_array($units['wgt'], array('K', 'L'))) ? $units['wgt'] : $this->getConfiguredWeightUnit(),
 						'service_type' => $service,
 						'shipper_num' => $this->settings['shipper_num'],
 						'shipping_date' => $shipping_date,
