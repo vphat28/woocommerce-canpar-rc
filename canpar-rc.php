@@ -451,13 +451,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						}
 
 						// Calculate the totals
-						$total_charge = 0;
-						foreach ($rate AS $index=>$value) {
-							//Find charges, exclude taxes
-							if ( (strpos($index, '_charge') || strpos($index, 'surcharge')) && strpos($index, 'tax_') === false) {
-								$total_charge += (float) $value;
-							}
-						}
+						$total_charge = (float)$rate['total_with_handling'];
 
 						// Add handling to the charge (not the taxes)
 						if ($this->settings['handling_fee_amount'] != 0)
