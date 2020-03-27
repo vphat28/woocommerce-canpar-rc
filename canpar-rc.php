@@ -2,7 +2,7 @@
 /*
 Plugin Name: Canpar Rate Calculator
 Description: Rate shipments via the Canpar rate calculator
-Version:	 1.0.8
+Version:	 1.1.1
 Author:	  Canpar Courier
 Author URI:  http://www.canpar.com
 License:	 GPL2

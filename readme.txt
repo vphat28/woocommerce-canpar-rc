@@ -19,3 +19,8 @@ The Canpar Rate Calculator plugin uses Canpar`s Web Services API to return a rat
 6) Populate the weight of each product. The dimensions are optional, but recommended for rate accuracy.
 
 Reference the accompanying `Settings and Troubleshooting` document for further detailed installation, configuration, troubleshooting, and development information.
+
+
+Changelogs
+- 1.1.1: Get total with handling from api response
+
