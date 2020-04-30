@@ -1,4 +1,5 @@
 === Canpar Rate Calculator ===
+Download: https://tinyurl.com/canparwoocommerceplugin
 Contributors: Canpar Courier
 Tags: Canpar, Rate Calculator
 Requires at least: 4.0.0
