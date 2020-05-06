@@ -2,7 +2,7 @@
 /*
 Plugin Name: Canpar Rate Calculator
 Description: Rate shipments via the Canpar rate calculator
-Version:	 1.1.1
+Version:	 1.1.2
 Author:	  Canpar Courier
 Author URI:  http://www.canpar.com
 License:	 GPL2
@@ -45,7 +45,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					$this->method_title	   = __( 'Canpar Rate Calculator' );  // Title shown in admin
 					$this->method_description = __( 'Calculate shipping rates using the Canpar rate calculator' ); // Description shown in admin
 					$this->title			  = "Canpar";
-					$this->version		= "1.0.7";
+					$this->version		= "1.1.2";
 
 					$this->init();
 				}
@@ -486,8 +486,6 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 							'id' => $rate['service_type'],
 							'label' => $label,
 							'cost' => $total_charge,
-							'taxes' => $taxes,
-							'calc_tax' => 'per_order'
 						);
 
 						$this->canpar_log($soap_log_name, "Rate output for {$this->services[$service->type]}:\n" . print_r($rate_output, 1), "append");
