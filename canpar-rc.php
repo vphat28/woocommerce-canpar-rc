@@ -2,7 +2,7 @@
 /*
 Plugin Name: Canpar Rate Calculator
 Description: Rate shipments via the Canpar rate calculator
-Version:	 1.1.2
+Version:	 1.1.3
 Author:	  Canpar Courier
 Author URI:  http://www.canpar.com
 License:	 GPL2
@@ -40,14 +40,20 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				* @access public
 				* @return void
 				*/
-				public function __construct() {
+				public function __construct( $instance_id = 0 ) {
 					$this->id				 = 'canpar_rate_calculator'; // Id for your shipping method. Should be unique.
 					$this->method_title	   = __( 'Canpar Rate Calculator' );  // Title shown in admin
 					$this->method_description = __( 'Calculate shipping rates using the Canpar rate calculator' ); // Description shown in admin
 					$this->title			  = "Canpar";
-					$this->version		= "1.1.2";
-
+					$this->version		= "1.1.3";
+                    $this->supports = array(
+                                'shipping-zones',
+                                'instance-settings',
+                                'instance-settings-modal',
+                            );
+                    $this->instance_id = absint( $instance_id );
 					$this->init();
+					add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
 				}
 
 				/**
@@ -959,7 +965,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 	add_action( 'woocommerce_shipping_init', 'canpar_rate_calculator_init' );
  
 	function add_canpar_shipping_method( $methods ) {
-		$methods['add_canpar_shipping_method'] = 'WC_Canpar_Rate_Calculator';
+		$methods['canpar_rate_calculator'] = 'WC_Canpar_Rate_Calculator';
 		return $methods;
 	}
  

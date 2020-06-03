@@ -25,4 +25,5 @@ Reference the accompanying `Settings and Troubleshooting` document for further d
 Changelogs
 - 1.1.1: Get total with handling from api response
 - 1.1.2: Apply taxes from WooCommerce
+- 1.1.3: Support shipping zones
 
