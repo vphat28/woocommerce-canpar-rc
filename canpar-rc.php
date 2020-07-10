@@ -2,7 +2,7 @@
 /*
 Plugin Name: Canpar Rate Calculator
 Description: Rate shipments via the Canpar rate calculator
-Version:	 1.1.3
+Version:	 1.1.4
 Author:	  Canpar Courier
 Author URI:  http://www.canpar.com
 License:	 GPL2
@@ -42,16 +42,16 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				*/
 				public function __construct( $instance_id = 0 ) {
 					$this->id				 = 'canpar_rate_calculator'; // Id for your shipping method. Should be unique.
+                    $this->instance_id = absint( $instance_id );
 					$this->method_title	   = __( 'Canpar Rate Calculator' );  // Title shown in admin
 					$this->method_description = __( 'Calculate shipping rates using the Canpar rate calculator' ); // Description shown in admin
 					$this->title			  = "Canpar";
-					$this->version		= "1.1.3";
+					$this->version		= "1.1.4";
                     $this->supports = array(
                                 'shipping-zones',
                                 'instance-settings',
                                 'instance-settings-modal',
                             );
-                    $this->instance_id = absint( $instance_id );
 					$this->init();
 					add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
 				}
@@ -135,7 +135,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				* @return void
 				*/
 				function init_form_fields() {
-					$this->form_fields = array(
+					$this->instance_form_fields = array(
 						'enabled' => array(
 							'title' => 'Enabled',
 							'type' => 'select',
@@ -324,6 +324,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				* @return void
 				*/
 				public function calculate_shipping( $package = array() ) {
+				    if ( count($this->instance_settings) > 0 ) {
+				        $this->settings = $this->instance_settings;
+				    }
 					// Only calculate the shipping if the "enabled" option is true
 					if ($this->settings['enabled'] == "no") {
 						return;
@@ -783,12 +786,12 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 				 */
 				function canpar_log ( $name, $output, $append="new" ) {
 					// Only write to the log file if the plugin's debug is enabled
-					if ($this->settings['debug'] == "no") {
+					if ($this->instance_settings['debug'] == "no") {
 						return;
 					}
 					
 					// Make the log directory if it doesn't exist
-					$dir = realpath(dirname(__FILE__)) . "/logs";
+					$dir = realpath(dirname(__FILE__, 3)) . "/uploads/logs";
 					
 					if ( !file_exists($dir) ) {
 						mkdir($dir, 0744);
@@ -804,7 +807,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					}
 					
 					// Determine the file name. If the file is to be appended, then do not include the time.
-					if ($append == "new") {
+    					if ($append == "new") {
 						$file_name = date('Ymd-His') . "-{$name}.log";
 					}
 					else {
