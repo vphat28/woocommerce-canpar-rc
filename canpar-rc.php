@@ -5,7 +5,7 @@ Description: Rate shipments via the Canpar rate calculator
 Version:	 1.1.4
 Author:	  Canpar Courier
 Author URI:  http://www.canpar.com
-License:	 GPL2
+License:	 GPL2		
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 TODO: Fail over rates
@@ -794,7 +794,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					$dir = realpath(dirname(__FILE__, 3)) . "/uploads/logs";
 					
 					if ( !file_exists($dir) ) {
-						mkdir($dir, 0744);
+						mkdir($dir, 775);
 					}
 					
 					/*
