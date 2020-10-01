@@ -27,4 +27,5 @@ Changelogs
 - 1.1.2: Apply taxes from WooCommerce
 - 1.1.3: Support shipping zones
 - 1.1.5: Fix issue in fresh installation
+- 1.1.6: Fix issue of handling fee
 
