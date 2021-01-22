@@ -420,10 +420,10 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					// Log the request
 					$this->canpar_log($soap_log_name, "getAvailableServices Request:\n" . $this->canpar->__getLastRequest(), "append");
 					$this->canpar_log($soap_log_name, "getAvailableServices Response:\n" . $this->canpar->__getLastResponse(), "append");
-
 					//Check for errors
 					$error = $this->get_error($available_services);
 					if ($error != "") {
+					  wc_add_notice($error);
 						$this->output_error($error, __LINE__);
 						return;
 					}
@@ -431,7 +431,9 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 					$available_services = $available_services->return->getAvailableServicesResult;
 
 					if (is_null($available_services))
-					{$available_services = array();} // Just make it a blank array to avoid errors about "invalid argument" for the following foreach()
+					{
+					  $available_services = array();
+					} // Just make it a blank array to avoid errors about "invalid argument" for the following foreach()
 
 					// Get the rate for each service
 					foreach ($available_services AS $service) {
@@ -452,6 +454,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						$error = $this->get_error($rate);
 
 						if ($error != "") {
+					    wc_add_notice($error, 'error');
 							$this->output_error("Service: {$this->services[$service->type]} - $error", __LINE__);
 							continue;
 						}
