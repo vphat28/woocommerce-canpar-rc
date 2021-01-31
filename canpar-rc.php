@@ -737,10 +737,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						if ($xc_pieces == 0) {
 							$xc_pieces = 1;
 						}
-					}
-					
-					
-					$this->canpar_log($gen_pcs_log, "DV: {$dv}\nMax weight: {$this->settings['maximum_weight']}\nTotal weight: {$total_weight}\nPieces: {$total_pieces}\nXC pieces: {$xc_pieces}", "append");
+					} 
 					
 					// Generate the pieces
 					$pieces = array();
@@ -754,7 +751,7 @@ if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', g
 						);
 						
 						// Add the XC piece if required
-						if ($i < $xc_pieces) {
+						if (isset($xc_pieces) && $i < $xc_pieces) {
 							$pieces[$i]['xc'] = true;
 						}
 					}
