@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Canpar Rate Calculator
-Description: Rate shipments via the Canpar rate calculator
+Description: Rate shipments via the Canpar rate calculator, please check for latest version at https://loomis01.collinsharper.com/woocommerce-canpar-rc.zip
 Version:	 1.1.8
 Author:	  Canpar Courier
 Author URI:  http://www.canpar.com
